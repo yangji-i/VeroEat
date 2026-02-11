@@ -37,37 +37,37 @@ export default function TabOneScreen() {
           const matched = forbidden.filter(item => ingredients.includes(item));
           
           // 弹出结果（Demo 第一步先用 Alert，稳住后再做自定义 UI）
-          const title = matched.length > 0 ? "⚠️ 风险警告" : "✅ 安全食用";
-          const message = `产品: ${product.product_name || '未知'}\n\n${
+          const title = matched.length > 0 ? "⚠️ Warning" : "✅ Safe";
+          const message = `Product: ${product.product_name || 'unknown'}\n\n${
             matched.length > 0 
-            ? `不符合 ${profile} 模式：含有 ${matched.join(', ')}` 
-            : "该产品成分符合您的档案需求。"
+            ? `Do not match ${profile} mode：Contains ${matched.join(', ')}` 
+            : "This product is safe"
           }`;
 
           Alert.alert(title, message, [{ text: "好的", onPress: () => setScanned(false) }]);
         } else {
-          Alert.alert("未找到", `条码 ${data} 不在数据库中`, [{ text: "重试", onPress: () => setScanned(false) }]);
+          Alert.alert("Not Found", `Barcode ${data} not in database`, [{ text: "Please try again", onPress: () => setScanned(false) }]);
         }
       })
       .catch(() => {
-        Alert.alert("错误", "网络连接失败");
+        Alert.alert("Error", "Connection Lost");
         setScanned(false);
       });
   };
 
-  if (hasPermission === null) return <View style={styles.center}><Text>正在请求相机权限...</Text></View>;
-  if (hasPermission === false) return <View style={styles.center}><Text>无相机权限，请在设置中开启</Text></View>;
+  if (hasPermission === null) return <View style={styles.center}><Text>Camera Permission Required...</Text></View>;
+  if (hasPermission === false) return <View style={styles.center}><Text>No camera permission provided</Text></View>;
 
   return (
     <View style={styles.container}>
       {/* 顶部档案切换 */}
       <View style={styles.header}>
-        <Text style={styles.headerText}>当前模式: {profile}</Text>
+        <Text style={styles.headerText}>Current Mode: {profile}</Text>
         <TouchableOpacity 
           style={styles.button} 
           onPress={() => setProfile(prev => prev === 'Baby' ? 'Allergy' : 'Baby')}
         >
-          <Text style={styles.buttonText}>切换档案</Text>
+          <Text style={styles.buttonText}>Change Profile</Text>
         </TouchableOpacity>
       </View>
 
@@ -88,7 +88,7 @@ export default function TabOneScreen() {
       </View>
 
       <View style={styles.footer}>
-        <Text style={styles.footerText}>请将条形码置于框内</Text>
+        <Text style={styles.footerText}>Place barcode inside the frame</Text>
       </View>
     </View>
   );
