@@ -22,6 +22,8 @@ export interface InventoryItem {
   isSafe?: boolean;
   expiryDate?: number;
   ingredientsSummary?: string;
+  lotCode?: string;
+  mfgDate?: string;
 
   recallStatus?: RecallStatus;
   recallTitle?: string;
@@ -45,6 +47,9 @@ type InventoryContextValue = {
     isSafe?: boolean;
     expiryDate?: number;
     ingredientsSummary?: string;
+
+    lotCode?: string;   // ✅ 新增
+    mfgDate?: string;   // ✅ 新增
   }) => boolean;
 
   removeItem: (id: string) => void;
@@ -170,6 +175,8 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
     isSafe,
     expiryDate,
     ingredientsSummary,
+    lotCode,
+    mfgDate,
   }) => {
     const uniqueId = `item_${Date.now()}_${Math.random()
       .toString(36)
@@ -184,6 +191,8 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
       isSafe,
       expiryDate,
       ingredientsSummary,
+      lotCode,
+      mfgDate,
       addedAt: Date.now(),
       recallStatus: "none",
       recallTitle: "",

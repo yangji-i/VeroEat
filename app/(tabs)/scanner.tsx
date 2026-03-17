@@ -63,7 +63,6 @@ export default function CameraScreen() {
   const resetScanner = () => {
     isProcessing.current = false;
     setScanned(false);
-    setScanResult(null); 
     setShowDetails(false);
   };
 
@@ -96,86 +95,28 @@ export default function CameraScreen() {
     }
   };
 
-  // --- 修改：添加至清单并处理保质期输入 ---
+  // --- 修改：添加至清单并跳转至OCR扫描 ---
   const prepareAddToInventory = async (
     name: string,
     barcode: string,
     isSafe: boolean,
     rawIngredients: string,
   ) => {
-    setScanResult(null);
     setLoadingAI(true);
-
-    // 1. 获取 AI 总结
+  
     const summary = await fetchIngredientsSummary(rawIngredients);
+  
     setLoadingAI(false);
-
-    // 2. 弹出保质期输入框 (输入天数)
-    Alert.prompt(
-      "Set Expiry Date?",
-      "Enter the exact expiration / best by date (e.g., MM/DD/YYYY or YYYY-MM-DD):",
-      [
-        { 
-          text: "Skip", 
-          style: "cancel",
-          onPress: () => {
-            const added = addItem({
-              name,
-              barcode,
-              scannedBy: userProfile.name || "Guest",
-              isSafe,
-              expiryDate: undefined, // 没有过期时间
-              ingredientsSummary: summary,
-            });
-
-            if (added) {
-              Alert.alert(
-                "Added", 
-                `${name} has been added without an expiry date.`, 
-                [{ text: "OK", onPress: resetScanner }]
-              );
-            }
-          } 
-        },
-        {
-          text: "Save",
-          onPress: (dateString: string | undefined) => {
-            let expiryTimestamp = undefined;
-            
-            if (dateString && dateString.trim() !== "") {
-              const parsedDate = new Date(dateString);
-              if (!isNaN(parsedDate.getTime())) {
-                expiryTimestamp = parsedDate.getTime();
-              } else {
-                Alert.alert("Invalid Date", "Could not read the date. Item added without an expiry date.");
-              }
-            }
-
-            const added = addItem({
-              name,
-              barcode,
-              scannedBy: userProfile.name || "Guest",
-              isSafe,
-              expiryDate: expiryTimestamp, 
-              ingredientsSummary: summary,
-            });
-
-            if (added) {
-              const dateMsg = expiryTimestamp 
-                ? `\nExpiry date set to: ${new Date(expiryTimestamp).toLocaleDateString()}`
-                : `\nNo expiry date set.`;
-
-              Alert.alert(
-                "Added",
-                `${name} has been added to inventory.${dateMsg}`,
-                [{ text: "OK", onPress: resetScanner }]
-              );
-            }
-          },
-        },
-      ],
-      "plain-text"
-    );
+  
+    router.push({
+      pathname: "/ocr",
+      params: {
+        name,
+        barcode,
+        isSafe: String(isSafe),
+        ingredientsSummary: summary,
+      },
+    });
   };
 
   const fetchAIRecommendation = async (

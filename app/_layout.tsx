@@ -30,6 +30,7 @@ export default function RootLayout() {
               options={{ presentation: "modal", title: "Modal" }}
             />
             <Stack.Screen name="login" options={{ headerShown: false }} />
+            <Stack.Screen name="ocr" options={{ title: "Scan Lot/Date" }} />
           </Stack>
         </InventoryProvider>
       </ProfileProvider>
